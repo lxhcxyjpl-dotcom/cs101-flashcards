@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>计算概论 · 速记卡</title>
+<style>
+  :root {
+    --bg: #f5f0e8;
+    --card-bg: #fffef9;
+    --text: #2c2416;
+    --accent: #2c5f8a;
+    --warm: #8b5e3c;
+    --border: #d4c5a9;
+    --green: #356b3a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+    background: var(--bg); color: var(--text); min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 1rem;
+  }
+
+  header { text-align: center; margin: 1.5rem 0; }
+  header h1 { font-size: 1.6rem; color: var(--accent); }
+  header p { color: #999; font-size: 0.85rem; margin-top: 0.3rem; }
+
+  /* ── Controls ── */
+  .controls {
+    display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.2rem;
+    justify-content: center; align-items: center;
+  }
+  .pill {
+    padding: 0.35rem 0.9rem; border-radius: 20px; border: 2px solid var(--border);
+    cursor: pointer; font-size: 0.82rem; transition: .2s; background: var(--card-bg);
+  }
+  .pill:hover { border-color: var(--accent); }
+  .pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .mode-btn {
+    padding: 0.4rem 1rem; border-radius: 6px; border: none; cursor: pointer;
+    font-size: 0.82rem; transition: .2s; background: var(--card-bg); border: 2px solid var(--border);
+  }
+  .mode-btn:hover { border-color: var(--accent); }
+  .mode-btn.active { background: var(--warm); color: #fff; border-color: var(--warm); }
+  #search {
+    padding: 0.4rem 1rem; border-radius: 20px; border: 2px solid var(--border);
+    font-size: 0.82rem; min-width: 200px; background: var(--card-bg);
+    outline: none;
+  }
+  #search:focus { border-color: var(--accent); }
+
+  .bar { display: flex; gap: 1rem; align-items: center; font-size: 0.8rem; color: #888; margin-bottom: 1rem; }
+
+  /* ── Card ── */
+  .card-scene {
+    perspective: 1200px; width: min(90vw, 480px);
+    aspect-ratio: 3/4; max-height: 460px; margin: 0 auto;
+  }
+  .card {
+    width: 100%; height: 100%; position: relative;
+    transform-style: preserve-3d; transition: transform .5s cubic-bezier(.4,0,.2,1);
+    cursor: pointer;
+  }
+  .card.flipped { transform: rotateY(180deg); }
+  .card-face {
+    position: absolute; inset: 0; backface-visibility: hidden;
+    border-radius: 16px; border: 1px solid var(--border);
+    background: var(--card-bg); box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    padding: 2rem 2.5rem; text-align: center; overflow-y: auto;
+  }
+  .card-back { transform: rotateY(180deg); }
+
+  .card-face .ch { font-size: 0.75rem; color: var(--accent); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.1em; }
+  .card-face .concept { font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; line-height: 1.4; }
+  .card-face .definition { font-size: 1rem; line-height: 1.8; color: #444; }
+  .card-face .keywords { margin-top: 1.2rem; display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; }
+  .card-face .keywords span {
+    background: #e8f0f8; color: var(--accent); padding: 0.2rem 0.6rem;
+    border-radius: 12px; font-size: 0.78rem;
+  }
+  .card-face .keywords span.blank {
+    background: #444; color: #444; cursor: pointer; min-width: 2rem; user-select: none;
+    transition: .2s;
+  }
+  .card-face .keywords span.blank.revealed { background: #e8f0f8; color: var(--accent); }
+
+  .card-face .flip-hint { position: absolute; bottom: 1rem; font-size: 0.7rem; color: #bbb; }
+
+  /* ── Quiz mode ── */
+  .quiz-area { width: 100%; margin-top: 0.8rem; }
+  .quiz-area textarea {
+    width: 100%; height: 100px; border: 2px solid var(--border); border-radius: 8px;
+    padding: 0.8rem; font-size: 0.9rem; resize: vertical; font-family: inherit;
+    background: var(--bg); outline: none;
+  }
+  .quiz-area textarea:focus { border-color: var(--accent); }
+  .quiz-area .show-btn {
+    margin-top: 0.5rem; padding: 0.4rem 1.2rem; border-radius: 6px;
+    border: none; background: var(--accent); color: #fff; cursor: pointer; font-size: 0.82rem;
+  }
+
+  /* ── Nav ── */
+  .nav { display: flex; gap: 0.5rem; margin-top: 1rem; align-items: center; }
+  .nav button {
+    padding: 0.5rem 1.2rem; border-radius: 8px; border: 2px solid var(--border);
+    cursor: pointer; background: var(--card-bg); font-size: 0.9rem; transition: .2s;
+  }
+  .nav button:hover { border-color: var(--accent); color: var(--accent); }
+  .nav button.master { border-color: var(--warm); color: var(--warm); }
+  .nav button.master.mastered { background: var(--warm); color: #fff; }
+  .nav .counter { font-size: 0.82rem; color: #888; }
+
+  @media (max-width: 500px) {
+    .card-scene { width: 90vw; max-height: 380px; }
+    .card-face { padding: 1.2rem; }
+    .card-face .concept { font-size: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>计算概论 · 速记卡</h1>
+  <p>点击卡片翻转 | ⬅ ➡ 切换 | M 标记掌握 | Space 翻转</p>
+</header>
+
+<div class="controls">
+  <input type="text" id="search" placeholder="🔍 搜索概念..." oninput="filterCards()">
+  <button class="pill active" data-ch="all" onclick="setChapter('all', this)">全部</button>
+  <button class="pill" data-ch="原理" onclick="setChapter('原理', this)">计算机原理</button>
+  <button class="pill" data-ch="Python" onclick="setChapter('Python', this)">Python 入门</button>
+</div>
+
+<div class="controls">
+  <button class="mode-btn active" data-mode="browse" onclick="setMode('browse', this)">浏览</button>
+  <button class="mode-btn" data-mode="quiz" onclick="setMode('quiz', this)">默写</button>
+  <button class="mode-btn" data-mode="blank" onclick="setMode('blank', this)">填空</button>
+</div>
+
+<div class="bar">
+  <span id="progress">0/0 已掌握</span>
+  <span style="flex:1"></span>
+  <span id="counter">1 / 0</span>
+</div>
+
+<div class="card-scene">
+  <div class="card" id="card" onclick="flipCard()">
+    <div class="card-face card-front" id="front">
+      <div class="ch" id="ch"></div>
+      <div class="concept" id="concept"></div>
+      <div class="flip-hint">点击翻转 →</div>
+    </div>
+    <div class="card-face card-back" id="back"></div>
+  </div>
+</div>
+
+<div class="nav">
+  <button onclick="prevCard()">⬅</button>
+  <button onclick="shuffleCards()">🔀</button>
+  <button id="masterBtn" class="master" onclick="toggleMaster()">⭐ 掌握</button>
+  <button onclick="nextCard()">➡</button>
+  <span class="counter" id="counter2">1 / 0</span>
+</div>
+
+<script>
+// ═══════════ DATA ═══════════
+const cards = [
+  {ch:"原理", concept:"二进制", definition:"计算机的母语——只用 0 和 1 表示所有信息。每一位代表 2 的幂（...8,4,2,1），每一位只有两种状态：通电(1)或不通电(0)。一切文字、图片、声音归根结底都是一串 0 和 1。", keywords:"0和1·2的幂·电路状态"},
+  {ch:"原理", concept:"布尔逻辑", definition:"0 和 1 的运算规则。只有三种基本操作：AND(两个都是1才是1)、OR(至少一个是1就是1)、NOT(取反)。这三种操作组合起来可以构建计算机的所有判断。", keywords:"AND·OR·NOT·真值表"},
+  {ch:"原理", concept:"冯·诺依曼架构", definition:"1945年提出的计算机组织方式，至今仍在使用。四大组件：CPU(大脑，做算术和逻辑判断)、内存RAM(短期记忆，极快断电就忘)、硬盘/SSD(长期记忆，断电不丢)、I/O设备(输入输出)。", keywords:"CPU·RAM·硬盘·总线"},
+  {ch:"原理", concept:"算法 Algorithm", definition:"解决某个问题的、明确的、有限的步骤序列。三个条件：每一步都明确、步骤有限、有明确的输入和输出。所有程序都由三种结构组成：顺序、分支(if/else)、循环(for/while)。", keywords:"步骤序列·明确·有限·输入输出"},
+  {ch:"原理", concept:"冒泡排序 Bubble Sort", definition:"最直观的排序算法：相邻元素两两比较，如果左边的比右边大就交换位置。每一轮把最大的元素'冒'到最后。简单易懂但效率不高(O(n²))，大数据量下不可用。", keywords:"相邻比较·交换·O(n²)·辅助轮"},
+  {ch:"原理", concept:"二分搜索 Binary Search", definition:"在已排序的数据中查找的高效算法：每次看中间元素，如果比目标大就排除右半，比目标小就排除左半。100万条数据最多只需约20步(O(log n))。前提是数据必须排好序。", keywords:"对半排除·O(log n)·必须有序·20步查百万"},
+  {ch:"原理", concept:"递归 Recursion", definition:"函数自己调用自己的编程技巧。三要素：基准条件(什么时候停)、递归步骤(怎么把问题缩小)、向基准收敛(每次调用更接近终点)。经典例子：阶乘 n! = n × (n-1)!。", keywords:"自调用·基准条件·分治·多米诺骨牌"},
+  {ch:"原理", concept:"分治 Divide and Conquer", definition:"把一个大问题切成几个小问题，分别解决，再把结果合并。每个小问题用同样的方法切，直到可以直接解决。二分搜索、快速排序、归并排序都是分治的实例。", keywords:"切分·解决·合并·递归"},
+  {ch:"原理", concept:"时间复杂度", definition:"衡量算法效率的标准——不关心绝对秒数，只关心数据量翻倍时时间怎么增长。常见级别：O(1)常数、O(log n)对数、O(n)线性、O(n²)平方、O(2ⁿ)指数。让你在写代码之前就知道会不会崩。", keywords:"大O记号·渐进分析·效率·数据规模"},
+  {ch:"原理", concept:"计算 Computation", definition:"不只是加减乘除——任何按照明确规则、从输入得到输出的过程都是计算。搜火锅店、发微信语音、淘宝推荐——本质都是输入→规则处理→输出。计算机就是'把输入按规则变成输出的机器'。", keywords:"输入·规则·输出·普适定义"},
+
+  {ch:"Python", concept:"print()", definition:"Python 内置函数——把括号里的内容显示到屏幕上。文字要加引号，数字不用。多个内容用逗号隔开。是编程入门的第一行代码：print('Hello, World!')。", keywords:"输出·内置函数·字符串·HelloWorld"},
+  {ch:"Python", concept:"变量 Variable", definition:"存储数据的'贴了标签的盒子'。用 = 赋值(不是等于！)。变量名只能含字母数字下划线，不能以数字开头。Python 变量不需要声明类型——赋值时自动确定。", keywords:"赋值·标签·=不是等于·动态类型"},
+  {ch:"Python", concept:"数据类型 Data Types", definition:"Python 四种基本类型：str(字符串，用引号)、int(整数)、float(浮点数/小数)、bool(布尔值True/False)。用 type() 可以查看任何变量的类型。不同类型之间用 int()/float()/str() 转换。", keywords:"str·int·float·bool·type()"},
+  {ch:"Python", concept:"input()", definition:"让程序停下来等用户输入——返回的永远是字符串。要做算术必须用 int() 或 float() 转换。不能直接把字符串和数字拼接——'分数'+95 会报错，必须写成 '分数'+str(95)。", keywords:"用户输入·返回字符串·类型转换·交互"},
+  {ch:"Python", concept:"条件判断 if/elif/else", definition:"让程序根据不同条件执行不同代码。自上而下检查条件，第一个成立的被执行。Python 用缩进标记代码块(不用大括号)。多个条件用 and/or/not 组合。", keywords:"分支·缩进·冒号·条件顺序"},
+  {ch:"Python", concept:"比较运算符", definition:"用于 if 条件中的比较：== 等于、!= 不等于、> 大于、< 小于、>= 大于等于、<= 小于等于。比较结果是布尔值(True/False)。注意 == 是两个等号，= 是一个等号(赋值)。", keywords:"==等于·!=不等于·布尔值·两个等号"},
+  {ch:"Python", concept:"for 循环", definition:"遍历一个序列中的每个元素。range(1,6) 生成 1 到 5(不包含6——左闭右开)。可以遍历列表、字符串、range 等任何可迭代对象。是最常用的循环形式。", keywords:"遍历·range·可迭代·左闭右开"},
+  {ch:"Python", concept:"while 循环", definition:"只要条件成立就一直重复执行。必须在循环体内改变条件变量，否则会死循环(按 Ctrl+C 强制停止)。适用于'不知道要循环多少次'的场景。", keywords:"条件循环·死循环·Ctrl+C·不确定次数"},
+  {ch:"Python", concept:"函数 Function", definition:"用 def 定义的一段可重复使用的代码。接收参数(输入)，通过 return 返回结果(输出)。函数内部的变量(局部变量)外面访问不到——这叫作用域封装。是编程最重要的抽象工具。", keywords:"def·参数·return·作用域·封装"},
+  {ch:"Python", concept:"列表 List", definition:"Python 最常用的数据容器——有顺序的集合。用方括号 [ ] 创建，索引从 0 开始(不是1！)。支持 append()添加、remove()删除、sort()排序、len()长度等操作。可用 for 循环遍历。", keywords:"方括号·索引从0·append·可遍历"},
+  {ch:"Python", concept:"字典 Dict", definition:"用'键-值'对存储数据的容器——通过名字(key)查找数据(value)，而不是通过数字索引。用花括号 {} 创建。特别适合表示有结构的信息(如一个人的档案)。", keywords:"键值对·花括号·按名查找·结构化"},
+];
+
+let state = {
+  currentIndex: 0,
+  filteredCards: [...cards],
+  activeChapter: 'all',
+  activeMode: 'browse',
+  isFlipped: false,
+  searchQuery: '',
+};
+let mastered = new Set(JSON.parse(localStorage.getItem('cs101-mastered') || '[]'));
+
+// ═══════════ RENDER ═══════════
+function render() {
+  const fc = state.filteredCards;
+  if (fc.length === 0) {
+    document.getElementById('concept').textContent = '没有匹配的卡片';
+    document.getElementById('ch').textContent = '';
+    return;
+  }
+  const card = fc[state.currentIndex];
+  document.getElementById('ch').textContent = card.ch;
+  document.getElementById('concept').textContent = card.concept;
+
+  // Back face
+  let backHTML = `<div class="ch">${card.ch}</div><div class="concept">${card.concept}</div>`;
+  if (state.activeMode === 'quiz') {
+    backHTML += `<div class="quiz-area">
+      <textarea placeholder="在这里写下你的理解..."></textarea>
+      <button class="show-btn" onclick="event.stopPropagation();showQuizAnswer()">显示答案</button>
+      <div class="definition" style="display:none;margin-top:1rem">${card.definition}</div>
+      <div class="keywords" style="display:none">${card.keywords.split('·').map(k=>`<span>${k}</span>`).join('')}</div>
+    </div>`;
+  } else if (state.activeMode === 'blank') {
+    const kwSpans = card.keywords.split('·').map(k => `<span class="blank" onclick="event.stopPropagation();this.classList.toggle('revealed')">${k}</span>`).join('');
+    backHTML += `<div class="definition">${card.definition}</div><div class="keywords">${kwSpans}</div>`;
+  } else {
+    backHTML += `<div class="definition">${card.definition}</div><div class="keywords">${card.keywords.split('·').map(k=>`<span>${k}</span>`).join('')}</div>`;
+  }
+  document.getElementById('back').innerHTML = backHTML;
+
+  // Master button
+  const isMastered = mastered.has(card.concept);
+  const mb = document.getElementById('masterBtn');
+  mb.textContent = isMastered ? '⭐ 已掌握' : '☆ 标记掌握';
+  mb.classList.toggle('mastered', isMastered);
+
+  // Counter
+  const cText = `${state.currentIndex + 1} / ${fc.length}`;
+  document.getElementById('counter').textContent = cText;
+  document.getElementById('counter2').textContent = cText;
+  document.getElementById('progress').textContent = `${mastered.size}/${cards.length} 已掌握`;
+
+  // Reset flip
+  state.isFlipped = false;
+  document.getElementById('card').classList.remove('flipped');
+}
+
+function flipCard() {
+  if (state.filteredCards.length === 0) return;
+  state.isFlipped = !state.isFlipped;
+  document.getElementById('card').classList.toggle('flipped', state.isFlipped);
+}
+
+function showQuizAnswer() {
+  const back = document.getElementById('back');
+  back.querySelector('.definition').style.display = 'block';
+  back.querySelector('.keywords').style.display = 'flex';
+}
+
+function nextCard() {
+  if (state.filteredCards.length === 0) return;
+  state.currentIndex = (state.currentIndex + 1) % state.filteredCards.length;
+  render();
+}
+
+function prevCard() {
+  if (state.filteredCards.length === 0) return;
+  state.currentIndex = (state.currentIndex - 1 + state.filteredCards.length) % state.filteredCards.length;
+  render();
+}
+
+function toggleMaster() {
+  const card = state.filteredCards[state.currentIndex];
+  if (!card) return;
+  if (mastered.has(card.concept)) {
+    mastered.delete(card.concept);
+  } else {
+    mastered.add(card.concept);
+  }
+  localStorage.setItem('cs101-mastered', JSON.stringify([...mastered]));
+  render();
+}
+
+function filterCards() {
+  const q = document.getElementById('search').value.toLowerCase().trim();
+  state.searchQuery = q;
+  applyFilters();
+}
+
+function setChapter(ch, el) {
+  state.activeChapter = ch;
+  document.querySelectorAll('[data-ch]').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  applyFilters();
+}
+
+function setMode(mode, el) {
+  state.activeMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+
+function applyFilters() {
+  let filtered = [...cards];
+  if (state.activeChapter !== 'all') {
+    filtered = filtered.filter(c => c.ch === state.activeChapter);
+  }
+  if (state.searchQuery) {
+    filtered = filtered.filter(c =>
+      c.concept.includes(state.searchQuery) ||
+      c.definition.includes(state.searchQuery) ||
+      c.keywords.includes(state.searchQuery) ||
+      c.ch.includes(state.searchQuery)
+    );
+  }
+  state.filteredCards = filtered;
+  state.currentIndex = 0;
+  render();
+}
+
+function shuffleCards() {
+  for (let i = state.filteredCards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [state.filteredCards[i], state.filteredCards[j]] = [state.filteredCards[j], state.filteredCards[i]];
+  }
+  state.currentIndex = 0;
+  render();
+}
+
+// ═══════════ Keyboard ═══════════
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.key === 'ArrowRight') nextCard();
+  if (e.key === 'ArrowLeft') prevCard();
+  if (e.key === ' ') { e.preventDefault(); flipCard(); }
+  if (e.key === 'm' || e.key === 'M') toggleMaster();
+});
+
+// Init
+render();
+</script>
+</body>
+</html>
