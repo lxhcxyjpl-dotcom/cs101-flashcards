@@ -132,6 +132,7 @@
   <button class="pill active" data-ch="all" onclick="setChapter('all', this)">全部</button>
   <button class="pill" data-ch="原理" onclick="setChapter('原理', this)">计算机原理</button>
   <button class="pill" data-ch="Python" onclick="setChapter('Python', this)">Python 入门</button>
+  <button class="pill" data-ch="自测" onclick="setChapter('自测', this)">💻 自测题</button>
 </div>
 
 <div class="controls">
@@ -190,6 +191,16 @@ const cards = [
   {ch:"Python", concept:"函数 Function", definition:"用 def 定义的一段可重复使用的代码。接收参数(输入)，通过 return 返回结果(输出)。函数内部的变量(局部变量)外面访问不到——这叫作用域封装。是编程最重要的抽象工具。", keywords:"def·参数·return·作用域·封装"},
   {ch:"Python", concept:"列表 List", definition:"Python 最常用的数据容器——有顺序的集合。用方括号 [ ] 创建，索引从 0 开始(不是1！)。支持 append()添加、remove()删除、sort()排序、len()长度等操作。可用 for 循环遍历。", keywords:"方括号·索引从0·append·可遍历"},
   {ch:"Python", concept:"字典 Dict", definition:"用'键-值'对存储数据的容器——通过名字(key)查找数据(value)，而不是通过数字索引。用花括号 {} 创建。特别适合表示有结构的信息(如一个人的档案)。", keywords:"键值对·花括号·按名查找·结构化"},
+
+  {ch:"自测", type:"quiz", concept:"print() 输出", code:"print(3 + 5)\nprint(\"3\" + \"5\")\nprint(\"答案是\", 42)", definition:"第一行打印数字 8（整数加法）。第二行打印 35（字符串拼接，不是加法！）。第三行打印 答案是 42（逗号自动加空格）。\n\n易错点：「3」+「5」是字符串拼接=「35」，不是 8。", keywords:"字符串拼接·数字加法·逗号分隔·类型区别"},
+  {ch:"自测", type:"quiz", concept:"变量赋值与类型", code:"x = 10\ny = x\ny = 20\nprint(x)", definition:"输出 10。\n\ny = x 是把 x 的值（10）复制一份给 y，不是让 y「指向」x。之后改 y 不影响 x。\n\n对于整数、字符串、布尔值——赋值是复制值，不是共享引用。", keywords:"赋值·值复制·不可变·变量独立"},
+  {ch:"自测", type:"quiz", concept:"input() 的类型陷阱", code:"age = input(\"年龄：\")\nprint(\"明年你\" + str(age + 1) + \"岁\")", definition:"运行到第 2 行会报错：TypeError。\n\ninput() 返回的是字符串！age 是字符串「18」，不能和数字 1 做加法。\n\n正确写法：age = int(input(\"年龄：\"))，先转成整数再 +1。", keywords:"input返回字符串·类型转换·TypeError·int()"},
+  {ch:"自测", type:"quiz", concept:"if 条件判断", code:"score = 75\nif score >= 90:\n    print(\"A\")\nelif score >= 80:\n    print(\"B\")\nelif score >= 60:\n    print(\"C\")\nelse:\n    print(\"D\")", definition:"输出 C。\n\n虽然 75≥90 不成立，75≥80 也不成立，但 75≥60 成立——所以执行 print(\"C\")。\n\n关键：顺序从最严格到最宽松，第一个成立的就执行，后面跳过。", keywords:"elif·条件顺序·短路·自上而下"},
+  {ch:"自测", type:"quiz", concept:"range() 的边界", code:"for i in range(1, 5):\n    print(i, end=\" \")\nprint()\nprint(\"循环结束，i =\", i)", definition:"第一行输出：1 2 3 4（不包含 5！）\n第二行输出：循环结束，i = 4\n\nrange(1,5) 是「左闭右开」——含起点 1，不含终点 5。循环结束后 i 保留最后一次的值。", keywords:"左闭右开·range边界·不含终点·循环变量"},
+  {ch:"自测", type:"quiz", concept:"while 循环计数", code:"n = 1\ntotal = 0\nwhile n <= 5:\n    total = total + n\n    n = n + 1\nprint(total)", definition:"输出 15。\n\n过程：total=0+1=1, n=2 → total=1+2=3, n=3 → total=3+3=6, n=4 → total=6+4=10, n=5 → total=10+5=15, n=6(退出)。\n\n这其实就是 1+2+3+4+5 的和。如果忘了 n=n+1 就会死循环。", keywords:"累加·while·循环变量·死循环风险"},
+  {ch:"自测", type:"quiz", concept:"函数返回值", code:"def double(x):\n    return x * 2\n\na = double(4)\nb = double(double(2))\nprint(a, b)", definition:"输出 8 8。\n\na = double(4) = 8。\nb = double(double(2)) 先算内层 double(2)=4，再算 double(4)=8。\n\n函数调用可以嵌套——内层的返回值直接作为外层的参数。", keywords:"return·嵌套调用·函数组合·返回值"},
+  {ch:"自测", type:"quiz", concept:"列表索引从0开始", code:"fruits = [\"苹果\", \"香蕉\", \"橘子\", \"葡萄\"]\nprint(fruits[1])\nprint(fruits[-1])\nprint(len(fruits))", definition:"第一行：香蕉（索引 1 是第二个元素，索引从 0 开始！）\n第二行：葡萄（-1 是最后一个元素）\n第三行：4（列表长度）\n\n易错点：fruits[1] 不是第一个，是第二个。", keywords:"索引从0·负数索引·len()·列表长度"},
+  {ch:"自测", type:"quiz", concept:"字典与列表组合", code:"students = [\n  {\"name\":\"小明\",\"score\":85},\n  {\"name\":\"小红\",\"score\":92}\n]\nprint(students[0][\"name\"])\nprint(students[1][\"score\"])", definition:"第一行：小明\n第二行：92\n\nstudents 是列表，students[0] 是第一个字典。再用 [\"name\"] 取字典里的键值。\n\n列表+字典组合是 Python 里最常用的数据表达方式。", keywords:"嵌套结构·列表含字典·双重索引·结构化数据"},
 ];
 
 let state = {
@@ -211,12 +222,34 @@ function render() {
     return;
   }
   const card = fc[state.currentIndex];
-  document.getElementById('ch').textContent = card.ch;
+  const isQuiz = card.type === 'quiz';
+  document.getElementById('ch').textContent = card.ch + (isQuiz ? ' · 自测题' : '');
   document.getElementById('concept').textContent = card.concept;
 
+  // Front face extra: code snippet for quiz cards
+  const frontEl = document.getElementById('front');
+  let frontExtra = frontEl.querySelector('.quiz-code');
+  if (!frontExtra) {
+    frontExtra = document.createElement('div');
+    frontExtra.className = 'quiz-code';
+    frontEl.appendChild(frontExtra);
+  }
+  if (isQuiz && card.code) {
+    frontExtra.innerHTML = `<pre style="background:#f0ece4;border-radius:8px;padding:0.8rem;margin-top:1rem;font-family:'JetBrains Mono','Consolas',monospace;font-size:0.78rem;line-height:1.5;text-align:left;white-space:pre-wrap;border-left:3px solid var(--accent);max-width:100%;overflow-x:auto">${card.code}</pre>`;
+    frontExtra.style.display = 'block';
+  } else {
+    frontExtra.style.display = 'none';
+  }
+
   // Back face
-  let backHTML = `<div class="ch">${card.ch}</div><div class="concept">${card.concept}</div>`;
-  if (state.activeMode === 'quiz') {
+  let backHTML = `<div class="ch">${card.ch}${isQuiz ? ' · 自测题' : ''}</div><div class="concept">${card.concept}</div>`;
+  if (isQuiz) {
+    // Quiz mode: back shows the answer directly
+    backHTML += `<div class="definition" style="margin-top:0.8rem;white-space:pre-wrap">${card.definition}</div>`;
+    if (card.keywords) {
+      backHTML += `<div class="keywords" style="margin-top:0.8rem">${card.keywords.split('·').map(k=>`<span>${k}</span>`).join('')}</div>`;
+    }
+  } else if (state.activeMode === 'quiz') {
     backHTML += `<div class="quiz-area">
       <textarea placeholder="在这里写下你的理解..."></textarea>
       <button class="show-btn" onclick="event.stopPropagation();showQuizAnswer()">显示答案</button>
